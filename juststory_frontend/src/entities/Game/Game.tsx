@@ -1,0 +1,261 @@
+"use client";
+import {
+  getActions,
+  sendMessage,
+  sendMessageFirst,
+} from "@/lib/entities/ai/aiSlice";
+import { validateToken } from "@/src/utils/validateToken";
+import Cookies from "js-cookie";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import TypeIt from "typeit-react";
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
+import styles from "./Game.module.css";
+
+const Game = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { actions, loading, error, imagePath } = useSelector(
+    (state: any) => state.ai // Указываем тип состояния
+  );
+  const params = useParams();
+  const currentGameScene = params.game;
+  const decodedCurrentGameScene =
+    typeof currentGameScene === "string"
+      ? decodeURIComponent(currentGameScene).replace(/-/g, " ")
+      : "Игра не найдена";
+  const formattedGameScene =
+    decodedCurrentGameScene.charAt(0).toUpperCase() +
+    decodedCurrentGameScene.slice(1);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [history, setHistory] = useState<string>("");
+  const [currentMessage, setCurrentMessage] = useState<string>("");
+  const [chooseAction, setChooseAction] = useState<string>("Сделать");
+  const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [loadingSendMessage, setLoadingSendMessage] = useState<boolean>(false);
+  const [displayedHistory, setDisplayedHistory] = useState<string[]>([]);
+  const historyRef = useRef<string>("");
+  const isMountedRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      validateToken(token).then((valid) => {
+        if (!valid) {
+          router.push("/login");
+        } else {
+          fetchData();
+        }
+      });
+    } else {
+      router.push("/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (history !== historyRef.current) {
+      historyRef.current = history;
+      const lines = history.split("\n").filter((line) => line.trim() !== "");
+      if (isMountedRef.current) {
+        setDisplayedHistory(lines);
+      }
+    }
+  }, [history]);
+
+  const fetchData = async () => {
+    const messageResponse = await dispatch(
+      sendMessageFirst(formattedGameScene)
+    );
+    if (sendMessageFirst.fulfilled.match(messageResponse)) {
+      const responseMessage = messageResponse.payload.message;
+      setCurrentMessage(responseMessage);
+      setHistory("");
+      setHistory((prev) => prev + responseMessage);
+    }
+  };
+
+  const handleButtonClick = async () => {
+    const resultAction = await dispatch(getActions(currentMessage));
+    if (getActions.fulfilled.match(resultAction)) {
+      setModalOpen(true);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (inputValue) {
+      setLoadingSendMessage(true);
+      const resultAction = await dispatch(
+        sendMessage({
+          message: currentMessage,
+          prompt: `Вы ${chooseAction}: ` + inputValue,
+        })
+      );
+      if (sendMessage.fulfilled.match(resultAction)) {
+        const responseMessage = resultAction.payload.initial;
+        const actionText =
+          chooseAction === "Сказать"
+            ? "решили сказать"
+            : chooseAction === "Событие"
+            ? "вызвали событие"
+            : "выбрали действие";
+        const formattedInputValue =
+          inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
+        setHistory(
+          (prev) =>
+            prev +
+            "\n\n" +
+            `<p class="${styles.whiteText}">Вы ${actionText}: ${formattedInputValue} </p>` +
+            "\n" +
+            responseMessage
+        );
+        setCurrentMessage(responseMessage);
+        setInputValue("");
+        setLoadingSendMessage(false);
+      }
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleActionSelect = (action: string) => {
+    setChooseAction(action);
+    setDropdownOpen(false);
+  };
+
+  return (
+    <div className={styles.container}>
+      <Header />
+      <div className={styles.gameContent}>
+        <h1 className={styles.header}>
+          Игровой сценарий: {formattedGameScene}
+        </h1>
+        <div className={styles.historyArea}>
+          {!history && (
+            <TypeIt
+              key="loading-text"
+              options={{ speed: 50, cursor: false }}
+              getBeforeInit={(instance) => {
+                instance.type("Печатаем...");
+                return instance;
+              }}
+            />
+          )}
+          {displayedHistory.map((msg, index) => {
+            if (!msg.trim()) return null;
+            const hasHtml = /<[^>]+>/.test(msg);
+            return (
+              <TypeIt
+                key={`history-${index}-${msg.substring(0, 20)}`}
+                options={{ speed: 10, cursor: false, html: hasHtml }}
+                getBeforeInit={(instance) => {
+                  if (hasHtml) {
+                    instance.type(msg, { html: true });
+                  } else {
+                    instance.type(msg);
+                  }
+                  return instance;
+                }}
+              />
+            );
+          })}
+          {loadingSendMessage && (
+            <TypeIt
+              key="loading-continuation"
+              options={{ speed: 30, cursor: false }}
+              className={styles.whiteText}
+              getBeforeInit={(instance) => {
+                instance.type("Печатаем продолжение истории...");
+                return instance;
+              }}
+            />
+          )}
+        </div>
+        <div className={styles.inputContainer}>
+          <button className={styles.actionButton} onClick={toggleDropdown}>
+            {chooseAction}
+          </button>
+          {isDropdownOpen && (
+            <div className={styles.dropdown}>
+              <div
+                className={styles.dropdownItem}
+                onClick={() => handleActionSelect("Сделать")}
+              >
+                Сделать
+              </div>
+              <div
+                className={styles.dropdownItem}
+                onClick={() => handleActionSelect("Сказать")}
+              >
+                Сказать
+              </div>
+              <div
+                className={styles.dropdownItem}
+                onClick={() => handleActionSelect("Событие")}
+              >
+                Событие
+              </div>
+            </div>
+          )}
+          <textarea
+            className={styles.inputField}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Введите текст"
+            onKeyDown={handleKeyDown}
+          />
+          <button className={styles.sendButton} onClick={handleSendMessage}>
+            Отправить
+          </button>
+        </div>
+        {isModalOpen && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <h2>Модальное окно</h2>
+              {loading && <p>Загрузка...</p>}
+              {error && <p>{error}</p>}
+              {actions.map((action: string, index: number) => (
+                <button
+                  key={index}
+                  className={styles.actionButton}
+                  onClick={() => handleButtonClick()}
+                >
+                  {action}
+                </button>
+              ))}
+              {imagePath && (
+                <img src={imagePath} alt="Сгенерированное изображение" />
+              )}
+              <button onClick={closeModal}>Закрыть</button>
+            </div>
+          </div>
+        )}
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default Game;
