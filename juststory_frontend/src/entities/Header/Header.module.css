@@ -1,0 +1,98 @@
+.headerContainer {
+	font-family: var(--font-butler), Arial, Helvetica, sans-serif !important;
+	background-color: black;
+	margin: auto;
+}
+
+.header {
+	font-family: var(--font-butler), Arial, Helvetica, sans-serif !important;
+	margin: auto;
+	padding: 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: black;
+	color: white;
+	gap: 8px;
+	flex-wrap: wrap; /* Позволяет элементам переноситься на новую строку */
+}
+
+.logoContainer {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	flex: 1; /* Занимает доступное пространство */
+}
+
+.navContainer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex: 1; /* Занимает доступное пространство */
+}
+
+.nav {
+	margin: auto;
+	padding-top: 8px;
+	padding-bottom: 16px;
+	font-weight: bold;
+}
+
+.navList {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+	text-align: center;
+	flex-wrap: wrap; /* Позволяет элементам списка переноситься на новую строку */
+}
+
+.navItem {
+	background-color: #6b46c1; /* purple-600 */
+	color: white;
+	padding: 8px 16px;
+	border-radius: 4px;
+	transition: background-color 0.3s;
+}
+
+.navItem:hover {
+	background-color: #805ad5; /* purple-700 */
+}
+
+.separator {
+	background-color: #6b46c1; /* purple-600 */
+	height: 2px;
+	width: 100%;
+}
+
+.blocks {
+	display: flex;
+	justify-content: space-between;
+	height: 90vh; /* Высота блоков 90% от высоты окна */
+}
+.navContainer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex: 1; /* Занимает доступное пространство */
+	opacity: 0; /* Начальное значение для анимации */
+	transition: opacity 0.5s ease; /* Плавный переход */
+}
+
+.fadeIn {
+	opacity: 1; /* Прозрачность 1 для отображения */
+}
+
+.fadeOut {
+	opacity: 0; /* Прозрачность 0 для скрытия */
+}
+.block {
+	background-color: #6b46c1; /* Фиолетовый цвет */
+	color: white;
+	flex: 1; /* Каждый блок занимает равное пространство */
+	margin: 10px; /* Отступ между блоками */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 24px; /* Размер шрифта текста в блоках */
+	border-radius: 10px; /* Закругленные углы */
+}
