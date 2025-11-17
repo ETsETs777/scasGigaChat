@@ -76,7 +76,7 @@ const Register: React.FC = () => {
 					</p>
 				</div>
 			</div>
-			<footer className={styles.footer}>JustStroy powered by GigaChat AI</footer>
+			<footer className={styles.footer}>JustStory powered by GigaChat AI</footer>
 		</div>
 	)
 }

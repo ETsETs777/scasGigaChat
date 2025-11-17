@@ -78,7 +78,7 @@ const Login: React.FC = () => {
           </p>
         </div>
       </div>
-      <footer className={styles.footer}>JustStroy powered by GigaChat</footer>
+      <footer className={styles.footer}>JustStory powered by GigaChat</footer>
     </div>
   );
 };
