@@ -1130,9 +1130,9 @@ graph TB
         REDIS_SERVER[(Redis Server)]
         
         subgraph "Cache Keys"
-            KEY1[user:{id}]
-            KEY2[subscription:{id}]
-            KEY3[token:{token}]
+            KEY1["user:id"]
+            KEY2["subscription:id"]
+            KEY3["token:value"]
         end
 
         subgraph "Cache Types"
