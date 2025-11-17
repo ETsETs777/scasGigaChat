@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'import { gameStorage } from '@/src/utils/localStorage'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { gameStorage } from '@/src/utils/localStorage'
 
 interface GameState {
 	script: string

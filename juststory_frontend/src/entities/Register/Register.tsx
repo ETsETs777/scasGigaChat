@@ -16,6 +16,7 @@ const Register: React.FC = () => {
 	const [error, setError] = useState<string | null>(null)
 	const [loginError, setLoginError] = useState<string | null>(null)
 	const [passwordError, setPasswordError] = useState<string | null>(null)
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const validateForm = () => {
 		let isValid = true
@@ -43,12 +44,14 @@ const Register: React.FC = () => {
 			return
 		}
 		
+		setIsSubmitting(true)
 		const resultAction = await dispatch(registerUser({ login, password }))
 		if (registerUser.fulfilled.match(resultAction)) {
 			router.push('/login')
 		} else {
 			setError('Ошибка регистрации. Пожалуйста, проверьте введенные данные.')
 		}
+		setIsSubmitting(false)
 	}
 
 	return (
@@ -99,7 +102,9 @@ const Register: React.FC = () => {
 						/>
 						{passwordError && <p className={styles.errorMessage}>{passwordError}</p>}
 						{error && <p className={styles.errorMessage}>{error}</p>}
-						<button type='submit' className={styles.button}>Зарегистироваться</button>
+						<button type='submit' className={styles.button} disabled={isSubmitting}>
+							{isSubmitting ? 'Регистрация...' : 'Зарегистироваться'}
+						</button>
 					</form>
 					<p className={styles.registerText}>
 						Есть аккаунт? <Link href='/login' className={styles.link}>Войти</Link>

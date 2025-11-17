@@ -286,7 +286,7 @@ const Game = () => {
         <div className={styles.historyArea}>
           {isInitializing && !history && (
             <TypeIt
-              key="loading-text"
+              key={`loading-init-${isInitializing}`}
               options={{ speed: 50, cursor: false }}
               getBeforeInit={(instance) => {
                 instance.type("Загружаем историю...");
@@ -311,8 +311,9 @@ const Game = () => {
             if (!cleanedMsg) return null;
             
             return (
-              <div key={`history-${index}-${cleanedMsg.substring(0, 30)}`} className={styles.historyMessage}>
+              <div key={`history-${index}-${cleanedMsg.substring(0, 30)}-${displayedHistory.length}`} className={styles.historyMessage}>
                 <TypeIt
+                  key={`typeit-${index}-${displayedHistory.length}-${cleanedMsg.substring(0, 20)}`}
                   options={{ speed: 10, cursor: false, html: hasHtml }}
                   getBeforeInit={(instance) => {
                     if (hasHtml) {

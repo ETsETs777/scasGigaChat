@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios"; // Импортируем Axios
-import styles from "./BuySub.module.css"; // Импортируем стили
+import axios from "axios";
+import styles from "./BuySub.module.css";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { backendApiUrl } from "@/src/utils/backendApiUrl";
 import Header from "../Header/Header";
+import { useToast } from "@/src/hooks/useToast";
 
 interface Subscription {
   id: number;
@@ -19,8 +20,10 @@ const BuySub: React.FC = () => {
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
     number | null
   >(null);
-  const [loading, setLoading] = useState<boolean>(true); // Состояние загрузки
+  const [loading, setLoading] = useState<boolean>(true);
+  const [purchasing, setPurchasing] = useState<boolean>(false);
   const router = useRouter();
+  const { showToast, ToastContainer } = useToast();
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -47,12 +50,14 @@ const BuySub: React.FC = () => {
   const handlePurchase = async () => {
     const token = Cookies.get("token");
     if (!token || selectedSubscriptionId === null) {
-      return alert("Пожалуйста, выберите подписку и войдите в систему.");
+      showToast("Пожалуйста, выберите подписку и войдите в систему.", "error");
+      return;
     }
     
     const selectedSub = subscriptions.find(sub => sub.id === selectedSubscriptionId);
     if (!selectedSub) {
-      return alert("Выбранная подписка не найдена.");
+      showToast("Выбранная подписка не найдена.", "error");
+      return;
     }
     
     setShowConfirmModal(true);
@@ -65,7 +70,7 @@ const BuySub: React.FC = () => {
     }
     
     setShowConfirmModal(false);
-    setLoading(true);
+    setPurchasing(true);
     
     try {
       const response = await axios.post(
@@ -78,18 +83,20 @@ const BuySub: React.FC = () => {
         }
       );
       if (response.status === 201) {
-        alert("Подписка успешно приобретена!");
-        router.push("/profile");
+        showToast("Подписка успешно приобретена!", "success");
+        setTimeout(() => {
+          router.push("/profile");
+        }, 1000);
       } else {
-        alert("Ошибка при покупке подписки: " + response.data.message);
+        showToast("Ошибка при покупке подписки: " + response.data.message, "error");
       }
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
         : (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Неизвестная ошибка";
-      alert("Ошибка при покупке подписки: " + errorMessage);
+      showToast("Ошибка при покупке подписки: " + errorMessage, "error");
     } finally {
-      setLoading(false);
+      setPurchasing(false);
     }
   };
 
@@ -125,8 +132,8 @@ const BuySub: React.FC = () => {
             </div>
           ))}
         </div>
-        <button className={styles.purchaseButton} onClick={handlePurchase} disabled={loading || selectedSubscriptionId === null}>
-          {loading ? "Обработка..." : "Купить подписку"}
+        <button className={styles.purchaseButton} onClick={handlePurchase} disabled={loading || purchasing || selectedSubscriptionId === null}>
+          {purchasing ? "Обработка..." : "Купить подписку"}
         </button>
       </div>
       {showConfirmModal && selectedSubscriptionId && (
@@ -138,16 +145,17 @@ const BuySub: React.FC = () => {
               за {subscriptions.find(s => s.id === selectedSubscriptionId)?.price} руб.?
             </p>
             <div className={styles.confirmModalButtons}>
-              <button className={styles.confirmButton} onClick={confirmPurchase}>
-                Подтвердить
+              <button className={styles.confirmButton} onClick={confirmPurchase} disabled={purchasing}>
+                {purchasing ? "Обработка..." : "Подтвердить"}
               </button>
-              <button className={styles.cancelButton} onClick={() => setShowConfirmModal(false)}>
+              <button className={styles.cancelButton} onClick={() => setShowConfirmModal(false)} disabled={purchasing}>
                 Отмена
               </button>
             </div>
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };
