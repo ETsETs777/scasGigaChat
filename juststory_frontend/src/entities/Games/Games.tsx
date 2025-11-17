@@ -3,7 +3,8 @@ import {
 	loadStateFromLocalStorage,
 	setImage,
 	setScript,
-} from '@/lib/entities/games/gamesSlice' // Импортируйте ваши действия
+} from '@/lib/entities/games/gamesSlice'
+import { RootState } from '@/lib/store'
 import Footer from '@/src/entities/Footer/Footer'
 import Header from '@/src/entities/Header/Header'
 import { MagnifyingGlassIcon, TagIcon } from '@heroicons/react/24/outline'
@@ -11,7 +12,7 @@ import { validateToken } from '@/src/utils/validateToken'
 import Cookies from 'js-cookie'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './Games.module.css'
 
@@ -20,11 +21,16 @@ const Games = () => {
 	const dispatch = useDispatch()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [imagePath, setImagePath] = useState('') // Состояние для пути к картинке
-	const [userScripts, setUserScripts] = useState<any[]>([]) // Состояние для пользовательских сценариев
+	interface GameCard {
+		image: string
+		text: string
+		category?: string
+	}
+
+	const [userScripts, setUserScripts] = useState<GameCard[]>([])
 	const [query, setQuery] = useState('')
 	const [activeCategory, setActiveCategory] = useState<string>('Все')
-	// Получаем сценарий из Redux
-	const script = useSelector((state: any) => state.games.script)
+	const script = useSelector((state: RootState) => state.games.script)
 
 	// Загружаем состояние из Local Storage при монтировании компонента
 	useEffect(() => {
@@ -32,11 +38,11 @@ const Games = () => {
 		if (token) {
 			validateToken(token).then(valid => {
 				if (!valid) {
-					//router.push('/login')
+					router.push('/login')
 				}
 			})
 		} else {
-			//router.push('/login')
+			router.push('/login')
 		}
 		// Загружаем состояние из Local Storage
 		dispatch(loadStateFromLocalStorage())
@@ -118,12 +124,15 @@ const Games = () => {
 
 	const categories = ['Все', 'Фэнтези', 'Баттл', 'Научная фантастика', 'Криминал', 'Романтика', 'Комедия']
 
-	const mergedCards = presetCards.concat(userScripts)
-	const filteredCards = mergedCards.filter(card => {
-		const byQuery = query.trim().length === 0 || card.text.toLowerCase().includes(query.toLowerCase())
-		const byCategory = activeCategory === 'Все' || (card.category ? card.category === activeCategory : true)
-		return byQuery && byCategory
-	})
+	const mergedCards = useMemo(() => presetCards.concat(userScripts), [userScripts])
+	
+	const filteredCards = useMemo(() => {
+		return mergedCards.filter((card: GameCard) => {
+			const byQuery = query.trim().length === 0 || card.text.toLowerCase().includes(query.toLowerCase())
+			const byCategory = activeCategory === 'Все' || (card.category ? card.category === activeCategory : true)
+			return byQuery && byCategory
+		})
+	}, [mergedCards, query, activeCategory])
 
 	return (
 		<div className={styles.container}>
@@ -162,7 +171,7 @@ const Games = () => {
 
 					<div className={styles.cardsContainer}>
 				{/* Отображение заранее созданных карточек */}
-					{filteredCards.map((card: any, index: number) => (
+					{filteredCards.map((card: GameCard, index: number) => (
 						<div
 							key={index}
 							className={styles.card}
@@ -170,10 +179,14 @@ const Games = () => {
 						>
 							<Image
 								src={card.image || '/startScenesImg/default-image.jpeg'}
-								alt={`Карточка ${index + 1}`}
+								alt={card.text || `Карточка ${index + 1}`}
 								className={styles.cardImage}
 								width={150}
 								height={150}
+								onError={(e) => {
+									const target = e.target as HTMLImageElement;
+									target.src = '/startScenesImg/default-image.jpeg';
+								}}
 							/>
 							<div className={styles.cardBody}>
 								<p className={styles.cardTitle}>{card.text}</p>
