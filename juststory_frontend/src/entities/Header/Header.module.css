@@ -86,13 +86,107 @@
 	opacity: 0; /* Прозрачность 0 для скрытия */
 }
 .block {
-	background-color: #6b46c1; /* Фиолетовый цвет */
+	background-color: #6b46c1;
 	color: white;
-	flex: 1; /* Каждый блок занимает равное пространство */
-	margin: 10px; /* Отступ между блоками */
+	flex: 1;
+	margin: 10px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 24px; /* Размер шрифта текста в блоках */
-	border-radius: 10px; /* Закругленные углы */
+	font-size: 24px;
+	border-radius: 10px;
+}
+
+.burgerButton {
+	display: none;
+	flex-direction: column;
+	justify-content: space-around;
+	width: 30px;
+	height: 30px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	z-index: 1001;
+}
+
+.burgerLine {
+	width: 30px;
+	height: 3px;
+	background-color: #6b46c1;
+	border-radius: 3px;
+	transition: all 0.3s ease;
+}
+
+.burgerButton:hover .burgerLine {
+	background-color: #805ad5;
+}
+
+.mobileMenuOverlay {
+	display: none;
+}
+
+@media (max-width: 768px) {
+	.burgerButton {
+		display: flex;
+	}
+
+	.navContainer {
+		position: fixed;
+		top: 0;
+		right: -100%;
+		width: 280px;
+		height: 100vh;
+		background-color: #1a1a1a;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: flex-start;
+		padding: 80px 20px 20px;
+		transition: right 0.3s ease;
+		z-index: 1000;
+		box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+		opacity: 1;
+	}
+
+	.navContainer.mobileMenuOpen {
+		right: 0;
+	}
+
+	.nav {
+		width: 100%;
+		padding: 0;
+	}
+
+	.navList {
+		flex-direction: column;
+		gap: 15px;
+		width: 100%;
+	}
+
+	.navItem {
+		display: block;
+		width: 100%;
+		padding: 12px 16px;
+		text-align: left;
+		font-size: 18px;
+	}
+
+	.mobileMenuOverlay {
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 999;
+	}
+
+	.header {
+		padding: 12px 16px;
+	}
+
+	.logoContainer {
+		flex: 0 0 auto;
+	}
 }
