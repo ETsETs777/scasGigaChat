@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
+import ErrorBoundary from "@/src/components/ErrorBoundary/ErrorBoundary";
 
 const butlerFont = localFont({
   src: "./fonts/Butler.woff",
@@ -33,12 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <StoreProvider>
         <body
           className={`${butlerFont.variable} ${monomakh.variable} antialiased`}
         >
-          {children ? children : null}
+          <ErrorBoundary>
+            {children ? children : null}
+          </ErrorBoundary>
         </body>
       </StoreProvider>
     </html>

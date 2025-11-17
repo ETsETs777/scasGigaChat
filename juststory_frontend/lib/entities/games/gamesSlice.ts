@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'import { gameStorage } from '@/src/utils/localStorage'
 
 interface GameState {
 	script: string
@@ -16,15 +16,15 @@ const gamesSlice = createSlice({
 	reducers: {
 		setScript(state, action: PayloadAction<string>) {
 			state.script = action.payload
-			localStorage.setItem('userScript', action.payload) // Сохранение в Local Storage
+			gameStorage.setScript(action.payload)
 		},
 		setImage(state, action: PayloadAction<string | null>) {
 			state.image = action.payload
-			localStorage.setItem('userImage', action.payload || '') // Сохранение в Local Storage
+			gameStorage.setImage(action.payload)
 		},
 		loadStateFromLocalStorage(state) {
-			const script = localStorage.getItem('userScript')
-			const image = localStorage.getItem('userImage')
+			const script = gameStorage.getScript()
+			const image = gameStorage.getImage()
 			if (script) {
 				state.script = script
 			}
@@ -32,9 +32,14 @@ const gamesSlice = createSlice({
 				state.image = image
 			}
 		},
+		clearGameState(state) {
+			state.script = ''
+			state.image = null
+			gameStorage.clear()
+		},
 	},
 })
 
-export const { setScript, setImage, loadStateFromLocalStorage } =
+export const { setScript, setImage, loadStateFromLocalStorage, clearGameState } =
 	gamesSlice.actions
 export default gamesSlice.reducer

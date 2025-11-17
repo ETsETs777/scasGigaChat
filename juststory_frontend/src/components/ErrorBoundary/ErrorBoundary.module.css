@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding: 20px;
+}
+
+.content {
+  max-width: 600px;
+  text-align: center;
+  background-color: #1a1a1a;
+  padding: 40px;
+  border-radius: 10px;
+  border: 1px solid #6b46c1;
+}
+
+.title {
+  font-size: 32px;
+  color: #6b46c1;
+  margin-bottom: 20px;
+}
+
+.message {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  color: #e5e5e5;
+}
+
+.details {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.summary {
+  cursor: pointer;
+  color: #bca6ff;
+  font-size: 16px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+.summary:hover {
+  color: #6b46c1;
+}
+
+.errorText {
+  background-color: #242424;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 14px;
+  color: #ff6b6b;
+  border: 1px solid #6b46c1;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.button {
+  background-color: #6b46c1;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #805ad5;
+}
+
+.buttonSecondary {
+  background-color: #242424;
+  color: white;
+  border: 1px solid #6b46c1;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.buttonSecondary:hover {
+  background-color: #6b46c1;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .message {
+    font-size: 16px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .button,
+  .buttonSecondary {
+    width: 100%;
+  }
+}
+
