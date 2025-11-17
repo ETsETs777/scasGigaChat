@@ -574,27 +574,837 @@ curl -X POST http://localhost:4202/api/ai/send-message-start \
 
 <div align="center">
 
+### 🎯 Общая архитектура системы
+
 ```mermaid
 graph TB
-    A[Frontend Next.js] -->|HTTP/REST| B[Backend NestJS]
-    B -->|ORM| C[(SQLite Database)]
-    B -->|Cache| D[Redis]
-    B -->|AI API| E[GigaChat AI]
-    
-    A -->|Redux| F[State Management]
-    A -->|LocalStorage| G[Progress Storage]
-    
-    B -->|JWT| H[Authentication]
-    B -->|Swagger| I[API Documentation]
-    
-    style A fill:#000,color:#fff
-    style B fill:#ea2845,color:#fff
-    style C fill:#003B57,color:#fff
-    style D fill:#DC382D,color:#fff
-    style E fill:#4CAF50,color:#fff
+    subgraph "👤 Пользовательский уровень"
+        USER1[💻 Десктоп браузер]
+        USER2[📱 Мобильный браузер]
+        USER3[📱 Планшет браузер]
+    end
+
+    subgraph "🌐 Frontend Layer - Next.js 15"
+        subgraph "📱 UI Components"
+            COMP1[🎨 Layout Components]
+            COMP2[📄 Page Components]
+            COMP3[🔄 Interactive Components]
+            COMP4[🎭 Game Components]
+            COMP5[👤 User Components]
+            COMP6[💳 Subscription Components]
+            COMP7[❌ Error Boundary]
+            COMP8[🔔 Toast Notifications]
+        end
+
+        subgraph "⚡ Client State Management"
+            REDUX[🗂️ Redux Toolkit Store]
+            SLICE1[AI Slice]
+            SLICE2[User Slice]
+            SLICE3[Games Slice]
+            SLICE4[Subscription Slice]
+        end
+
+        subgraph "💾 Local Storage"
+            LOCAL1[🎮 Game Progress]
+            LOCAL2[🔑 Auth Tokens]
+            LOCAL3[⚙️ User Preferences]
+        end
+
+        subgraph "📡 API Client Layer"
+            AXIOS[🌐 Axios HTTP Client]
+            INTERCEPTOR[🛡️ Request Interceptors]
+            RETRY[🔄 Retry Logic]
+            ERROR_HANDLER[❌ Error Handler]
+        end
+
+        subgraph "🎨 Styling & Animation"
+            TAILWIND[🎨 Tailwind CSS]
+            FRAMER[✨ Framer Motion]
+            TYPEIT[⌨️ TypeIt React]
+        end
+    end
+
+    subgraph "🔒 Security Layer"
+        JWT_CLIENT[JWT Token Manager]
+        COOKIE[🍪 js-cookie]
+        VALIDATION[✅ Client Validation]
+    end
+
+    subgraph "🚀 Backend Layer - NestJS 10"
+        subgraph "🌐 API Gateway"
+            GATEWAY[Express Platform]
+            MIDDLEWARE1[🔐 Auth Middleware]
+            MIDDLEWARE2[📝 Validation Middleware]
+            MIDDLEWARE3[📊 Logging Middleware]
+            CORS[🌍 CORS Handler]
+        end
+
+        subgraph "🎮 Controllers Layer"
+            CTRL1[🤖 AI Controller]
+            CTRL2[👤 User Controller]
+            CTRL3[💳 Subscription Controller]
+            CTRL4[⏰ Subscription-Checker Controller]
+        end
+
+        subgraph "🧠 Services Layer"
+            SERVICE1[🤖 AI Service]
+            SERVICE2[👤 User Service]
+            SERVICE3[💳 Subscription Service]
+            SERVICE4[⏰ Subscription-Checker Service]
+            SERVICE5[🔐 Auth Service]
+            SERVICE6[📊 Cache Service]
+        end
+
+        subgraph "🤖 AI Module"
+            GIGACHAT[🧠 GigaChat API Client]
+            PROMPT_MANAGER[📝 Prompt Manager]
+            RETRY_LOGIC[🔄 Retry Logic with Exponential Backoff]
+            IMAGE_GENERATOR[🖼️ Image Generator]
+            STORY_GENERATOR[📖 Story Generator]
+            ACTION_GENERATOR[🎯 Action Generator]
+        end
+
+        subgraph "👤 User Module"
+            REGISTER[📝 Registration Service]
+            LOGIN[🔑 Login Service]
+            PROFILE[👤 Profile Service]
+            TOKEN_VALIDATOR[✅ Token Validator]
+            PASSWORD_HASHER[🔐 Argon2 Hasher]
+        end
+
+        subgraph "💳 Subscription Module"
+            SUB_LIST[📋 Subscription List]
+            SUB_PURCHASE[💰 Purchase Service]
+            SUB_CHECKER[✅ Status Checker]
+            SUB_SCHEDULER[⏰ Expiration Scheduler]
+        end
+
+        subgraph "📊 Data Access Layer"
+            PRISMA[🗄️ Prisma ORM]
+            PRISMA_CLIENT[🔌 Prisma Client]
+            MIGRATIONS[📦 Migrations]
+            SCHEMA[📋 Schema Definition]
+        end
+
+        subgraph "⚡ Cache Layer"
+            REDIS_MODULE[📦 Redis Module]
+            REDIS_CLIENT[🔌 Redis Client]
+            CACHE_MANAGER[💾 Cache Manager]
+            USER_CACHE[👤 User Cache]
+            SUB_CACHE[💳 Subscription Cache]
+        end
+
+        subgraph "📚 Documentation"
+            SWAGGER[📖 Swagger UI]
+            API_DOCS[📝 API Documentation]
+        end
+    end
+
+    subgraph "💾 Data Storage Layer"
+        SQLITE[(🗄️ SQLite Database)]
+        TABLES[📊 Tables: User, Subscription]
+        MIGRATIONS_DB[📦 Migration Files]
+    end
+
+    subgraph "⚡ In-Memory Cache"
+        REDIS[(🔴 Redis Server)]
+        REDIS_KEYS[🔑 Cache Keys]
+        REDIS_EXPIRE[⏰ TTL Management]
+    end
+
+    subgraph "🌐 External Services"
+        GIGACHAT_API[🧠 GigaChat AI API]
+        GIGACHAT_AUTH[🔐 GigaChat Auth]
+        GIGACHAT_CHAT[💬 Chat API]
+        GIGACHAT_IMAGE[🖼️ Image Generation API]
+    end
+
+    USER1 --> COMP1
+    USER2 --> COMP1
+    USER3 --> COMP1
+
+    COMP1 --> REDUX
+    COMP2 --> REDUX
+    COMP3 --> REDUX
+    COMP4 --> REDUX
+    COMP5 --> REDUX
+    COMP6 --> REDUX
+
+    REDUX --> SLICE1
+    REDUX --> SLICE2
+    REDUX --> SLICE3
+    REDUX --> SLICE4
+
+    COMP1 --> LOCAL1
+    COMP2 --> LOCAL2
+    REDUX --> LOCAL1
+
+    SLICE1 --> AXIOS
+    SLICE2 --> AXIOS
+    SLICE3 --> AXIOS
+    SLICE4 --> AXIOS
+
+    AXIOS --> INTERCEPTOR
+    INTERCEPTOR --> RETRY
+    RETRY --> ERROR_HANDLER
+    ERROR_HANDLER --> JWT_CLIENT
+
+    JWT_CLIENT --> COOKIE
+    AXIOS --> VALIDATION
+
+    AXIOS -->|HTTP/REST API| GATEWAY
+
+    GATEWAY --> MIDDLEWARE1
+    MIDDLEWARE1 --> MIDDLEWARE2
+    MIDDLEWARE2 --> MIDDLEWARE3
+    GATEWAY --> CORS
+
+    MIDDLEWARE1 --> CTRL1
+    MIDDLEWARE1 --> CTRL2
+    MIDDLEWARE1 --> CTRL3
+    MIDDLEWARE1 --> CTRL4
+
+    CTRL1 --> SERVICE1
+    CTRL2 --> SERVICE2
+    CTRL3 --> SERVICE3
+    CTRL4 --> SERVICE4
+
+    SERVICE1 --> SERVICE5
+    SERVICE2 --> SERVICE5
+    SERVICE3 --> SERVICE5
+
+    SERVICE1 --> GIGACHAT
+    SERVICE2 --> REGISTER
+    SERVICE2 --> LOGIN
+    SERVICE2 --> PROFILE
+    SERVICE3 --> SUB_LIST
+    SERVICE3 --> SUB_PURCHASE
+    SERVICE4 --> SUB_CHECKER
+
+    GIGACHAT --> PROMPT_MANAGER
+    GIGACHAT --> RETRY_LOGIC
+    GIGACHAT --> IMAGE_GENERATOR
+    GIGACHAT --> STORY_GENERATOR
+    GIGACHAT --> ACTION_GENERATOR
+
+    REGISTER --> PASSWORD_HASHER
+    LOGIN --> PASSWORD_HASHER
+    LOGIN --> TOKEN_VALIDATOR
+
+    SERVICE1 --> SERVICE6
+    SERVICE2 --> SERVICE6
+    SERVICE3 --> SERVICE6
+
+    SERVICE2 --> PRISMA_CLIENT
+    SERVICE3 --> PRISMA_CLIENT
+    SERVICE4 --> PRISMA_CLIENT
+
+    PRISMA_CLIENT --> PRISMA
+    PRISMA --> SCHEMA
+    PRISMA --> MIGRATIONS
+    MIGRATIONS --> MIGRATIONS_DB
+
+    PRISMA --> SQLITE
+    SQLITE --> TABLES
+
+    SERVICE6 --> REDIS_CLIENT
+    REDIS_CLIENT --> REDIS_MODULE
+    REDIS_MODULE --> REDIS
+    REDIS --> REDIS_KEYS
+    REDIS --> REDIS_EXPIRE
+
+    CACHE_MANAGER --> USER_CACHE
+    CACHE_MANAGER --> SUB_CACHE
+
+    GIGACHAT --> GIGACHAT_API
+    GIGACHAT_API --> GIGACHAT_AUTH
+    GIGACHAT_API --> GIGACHAT_CHAT
+    GIGACHAT_API --> GIGACHAT_IMAGE
+
+    GATEWAY --> SWAGGER
+    SWAGGER --> API_DOCS
+
+    style USER1 fill:#4A90E2,color:#fff
+    style USER2 fill:#4A90E2,color:#fff
+    style USER3 fill:#4A90E2,color:#fff
+    style REDUX fill:#764ABC,color:#fff
+    style AXIOS fill:#5A29E4,color:#fff
+    style GATEWAY fill:#ea2845,color:#fff
+    style SQLITE fill:#003B57,color:#fff
+    style REDIS fill:#DC382D,color:#fff
+    style GIGACHAT_API fill:#4CAF50,color:#fff
+    style SWAGGER fill:#85EA2D,color:#000
 ```
 
-> 💡 **Примечание:** Диаграмма показывает основную архитектуру взаимодействия компонентов системы
+### 📊 Детальная архитектура Frontend
+
+```mermaid
+graph LR
+    subgraph "📱 Next.js 15 App Router"
+        subgraph "📄 Pages"
+            PAGE1[🏠 Home Page]
+            PAGE2[🔐 Login Page]
+            PAGE3[📝 Register Page]
+            PAGE4[🎮 Games Page]
+            PAGE5[🎭 Game Session Page]
+            PAGE6[👤 Profile Page]
+            PAGE7[💳 Buy Subscription Page]
+            PAGE8[ℹ️ About Page]
+        end
+
+        subgraph "🎨 Layout Components"
+            LAYOUT1[📐 Root Layout]
+            LAYOUT2[🧭 Navigation Bar]
+            LAYOUT3[🍔 Mobile Menu]
+            LAYOUT4[👣 Footer]
+        end
+
+        subgraph "🔄 Interactive Components"
+            COMP1[🎯 Action Buttons]
+            COMP2[📝 Text Input]
+            COMP3[🔘 Radio Buttons]
+            COMP4[✅ Checkbox]
+            COMP5[📋 Select Dropdown]
+            COMP6[🔄 Loading Spinner]
+            COMP7[❌ Error Message]
+            COMP8[✅ Success Toast]
+        end
+
+        subgraph "🎮 Game Components"
+            GAME1[📖 Story Display]
+            GAME2[⌨️ Typewriter Effect]
+            GAME3[🖼️ Scene Image]
+            GAME4[🎯 Action Selector]
+            GAME5[💬 Dialog Box]
+            GAME6[📊 Progress Bar]
+        end
+    end
+
+    subgraph "🗂️ Redux Store Architecture"
+        STORE[🏪 Redux Store]
+        
+        subgraph "AI Slice"
+            AI_STATE[AI State]
+            AI_ACTIONS[AI Actions]
+            AI_REDUCERS[AI Reducers]
+            AI_THUNKS[AI Thunks]
+        end
+
+        subgraph "User Slice"
+            USER_STATE[User State]
+            USER_ACTIONS[User Actions]
+            USER_REDUCERS[User Reducers]
+            USER_THUNKS[User Thunks]
+        end
+
+        subgraph "Games Slice"
+            GAMES_STATE[Games State]
+            GAMES_ACTIONS[Games Actions]
+            GAMES_REDUCERS[Games Reducers]
+            GAMES_THUNKS[Games Thunks]
+        end
+
+        subgraph "Subscription Slice"
+            SUB_STATE[Subscription State]
+            SUB_ACTIONS[Subscription Actions]
+            SUB_REDUCERS[Subscription Reducers]
+            SUB_THUNKS[Subscription Thunks]
+        end
+    end
+
+    subgraph "🌐 API Layer"
+        API_BASE[Base API Config]
+        API_ENDPOINTS[API Endpoints]
+        API_INTERCEPTORS[Request/Response Interceptors]
+        API_RETRY[Retry Logic]
+    end
+
+    subgraph "💾 Storage"
+        STORAGE1[LocalStorage]
+        STORAGE2[SessionStorage]
+        STORAGE3[Cookies]
+    end
+
+    subgraph "✨ Animation & Styling"
+        ANIM1[Framer Motion]
+        ANIM2[TypeIt React]
+        STYLE1[Tailwind CSS]
+        STYLE2[Custom CSS]
+    end
+
+    PAGE1 --> LAYOUT1
+    PAGE2 --> LAYOUT1
+    PAGE3 --> LAYOUT1
+    PAGE4 --> LAYOUT1
+    PAGE5 --> LAYOUT1
+    PAGE6 --> LAYOUT1
+    PAGE7 --> LAYOUT1
+    PAGE8 --> LAYOUT1
+
+    LAYOUT1 --> LAYOUT2
+    LAYOUT1 --> LAYOUT3
+    LAYOUT1 --> LAYOUT4
+
+    PAGE4 --> GAME1
+    PAGE5 --> GAME1
+    PAGE5 --> GAME2
+    PAGE5 --> GAME3
+    PAGE5 --> GAME4
+
+    GAME1 --> ANIM2
+    GAME2 --> ANIM2
+    GAME3 --> ANIM1
+    GAME4 --> COMP1
+
+    PAGE1 --> STORE
+    PAGE2 --> STORE
+    PAGE3 --> STORE
+    PAGE4 --> STORE
+    PAGE5 --> STORE
+    PAGE6 --> STORE
+    PAGE7 --> STORE
+
+    STORE --> AI_STATE
+    STORE --> USER_STATE
+    STORE --> GAMES_STATE
+    STORE --> SUB_STATE
+
+    AI_THUNKS --> API_ENDPOINTS
+    USER_THUNKS --> API_ENDPOINTS
+    GAMES_THUNKS --> API_ENDPOINTS
+    SUB_THUNKS --> API_ENDPOINTS
+
+    API_ENDPOINTS --> API_BASE
+    API_BASE --> API_INTERCEPTORS
+    API_INTERCEPTORS --> API_RETRY
+
+    USER_THUNKS --> STORAGE3
+    GAMES_THUNKS --> STORAGE1
+    AI_THUNKS --> STORAGE1
+
+    LAYOUT1 --> STYLE1
+    COMP1 --> STYLE1
+    GAME1 --> STYLE1
+    GAME2 --> ANIM1
+```
+
+### 🏛️ Детальная архитектура Backend
+
+```mermaid
+graph TB
+    subgraph "🚀 NestJS Application"
+        subgraph "📦 Core Modules"
+            APP_MODULE[App Module - Root]
+            CONFIG_MODULE[Config Module]
+            PRISMA_MODULE[Prisma Module]
+            REDIS_MODULE[Redis Module]
+            SCHEDULE_MODULE[Schedule Module]
+        end
+
+        subgraph "🤖 AI Module"
+            AI_MODULE[AI Module]
+            AI_CONTROLLER[AI Controller]
+            AI_SERVICE[AI Service]
+            
+            subgraph "AI Service Methods"
+                METHOD1[sendMessageStart]
+                METHOD2[sendMessage]
+                METHOD3[getActions]
+                METHOD4[generateImage]
+            end
+
+            subgraph "AI Utilities"
+                UTIL1[Prompt Builder]
+                UTIL2[Response Parser]
+                UTIL3[Error Handler]
+                UTIL4[Retry Manager]
+            end
+        end
+
+        subgraph "👤 User Module"
+            USER_MODULE[User Module]
+            USER_CONTROLLER[User Controller]
+            USER_SERVICE[User Service]
+            
+            subgraph "User Service Methods"
+                METHOD5[register]
+                METHOD6[login]
+                METHOD7[getProfile]
+                METHOD8[validateToken]
+            end
+
+            subgraph "User Utilities"
+                UTIL5[JWT Generator]
+                UTIL6[Password Hasher - Argon2]
+                UTIL7[Token Validator]
+                UTIL8[User Cache Manager]
+            end
+        end
+
+        subgraph "💳 Subscription Module"
+            SUB_MODULE[Subscription Module]
+            SUB_CONTROLLER[Subscription Controller]
+            SUB_SERVICE[Subscription Service]
+            
+            subgraph "Subscription Service Methods"
+                METHOD9[getAll]
+                METHOD10[purchase]
+                METHOD11[checkStatus]
+            end
+        end
+
+        subgraph "⏰ Subscription Checker Module"
+            CHECKER_MODULE[Subscription Checker Module]
+            CHECKER_SERVICE[Subscription Checker Service]
+            CHECKER_CRON[Cron Job - Check Expired]
+        end
+
+        subgraph "🔐 Authentication"
+            AUTH_GUARD[JWT Auth Guard]
+            AUTH_DECORATOR[Auth Decorator]
+            AUTH_STRATEGY[JWT Strategy]
+        end
+
+        subgraph "📊 Data Access"
+            PRISMA_SERVICE[Prisma Service]
+            PRISMA_CLIENT[Prisma Client]
+            
+            subgraph "Database Models"
+                MODEL1[User Model]
+                MODEL2[Subscription Model]
+            end
+
+            subgraph "Database Operations"
+                OP1[Find Operations]
+                OP2[Create Operations]
+                OP3[Update Operations]
+                OP4[Delete Operations]
+                OP5[Transaction Operations]
+            end
+        end
+
+        subgraph "⚡ Cache Management"
+            REDIS_SERVICE[Redis Service]
+            CACHE_STRATEGY[Cache Strategy]
+            
+            subgraph "Cache Operations"
+                CACHE_OP1[Get from Cache]
+                CACHE_OP2[Set to Cache]
+                CACHE_OP3[Delete from Cache]
+                CACHE_OP4[Set TTL]
+            end
+        end
+
+        subgraph "🛡️ Middleware & Guards"
+            MID1[Global Validation Pipe]
+            MID2[Global Exception Filter]
+            MID3[CORS Middleware]
+            MID4[Logging Middleware]
+            MID5[Rate Limiting Middleware]
+        end
+
+        subgraph "📚 Documentation"
+            SWAGGER_MODULE[Swagger Module]
+            SWAGGER_CONFIG[Swagger Config]
+            API_TAGS[API Tags]
+            API_DESCRIPTIONS[API Descriptions]
+        end
+    end
+
+    subgraph "💾 Database Layer"
+        SQLITE_DB[(SQLite Database)]
+        
+        subgraph "Tables"
+            TABLE1[(Users Table)]
+            TABLE2[(Subscriptions Table)]
+        end
+
+        subgraph "Indexes"
+            INDEX1[User ID Index]
+            INDEX2[User Name Index]
+            INDEX3[Subscription ID Index]
+        end
+    end
+
+    subgraph "⚡ Cache Layer"
+        REDIS_SERVER[(Redis Server)]
+        
+        subgraph "Cache Keys"
+            KEY1[user:{id}]
+            KEY2[subscription:{id}]
+            KEY3[token:{token}]
+        end
+
+        subgraph "Cache Types"
+            TYPE1[String Cache]
+            TYPE2[Hash Cache]
+            TYPE3[TTL Cache]
+        end
+    end
+
+    subgraph "🌐 External Services"
+        GIGACHAT[GigaChat AI API]
+        
+        subgraph "GigaChat Endpoints"
+            GC1[/chat/completions]
+            GC2[/images/generations]
+            GC3[/auth]
+        end
+    end
+
+    APP_MODULE --> CONFIG_MODULE
+    APP_MODULE --> PRISMA_MODULE
+    APP_MODULE --> REDIS_MODULE
+    APP_MODULE --> SCHEDULE_MODULE
+    APP_MODULE --> AI_MODULE
+    APP_MODULE --> USER_MODULE
+    APP_MODULE --> SUB_MODULE
+    APP_MODULE --> CHECKER_MODULE
+    APP_MODULE --> SWAGGER_MODULE
+
+    AI_MODULE --> AI_CONTROLLER
+    AI_CONTROLLER --> AI_SERVICE
+    AI_SERVICE --> METHOD1
+    AI_SERVICE --> METHOD2
+    AI_SERVICE --> METHOD3
+    AI_SERVICE --> METHOD4
+
+    METHOD1 --> UTIL1
+    METHOD2 --> UTIL1
+    METHOD3 --> UTIL1
+    METHOD1 --> UTIL2
+    METHOD2 --> UTIL2
+    METHOD3 --> UTIL2
+    METHOD1 --> UTIL3
+    METHOD2 --> UTIL3
+    METHOD3 --> UTIL3
+    METHOD1 --> UTIL4
+    METHOD2 --> UTIL4
+
+    USER_MODULE --> USER_CONTROLLER
+    USER_CONTROLLER --> USER_SERVICE
+    USER_SERVICE --> METHOD5
+    USER_SERVICE --> METHOD6
+    USER_SERVICE --> METHOD7
+    USER_SERVICE --> METHOD8
+
+    METHOD5 --> UTIL6
+    METHOD6 --> UTIL6
+    METHOD6 --> UTIL5
+    METHOD8 --> UTIL7
+    METHOD7 --> UTIL8
+
+    SUB_MODULE --> SUB_CONTROLLER
+    SUB_CONTROLLER --> SUB_SERVICE
+    SUB_SERVICE --> METHOD9
+    SUB_SERVICE --> METHOD10
+    SUB_SERVICE --> METHOD11
+
+    CHECKER_MODULE --> CHECKER_SERVICE
+    CHECKER_SERVICE --> CHECKER_CRON
+
+    AI_CONTROLLER --> AUTH_GUARD
+    USER_CONTROLLER --> AUTH_GUARD
+    SUB_CONTROLLER --> AUTH_GUARD
+
+    AUTH_GUARD --> AUTH_STRATEGY
+    AUTH_STRATEGY --> AUTH_DECORATOR
+
+    AI_SERVICE --> PRISMA_SERVICE
+    USER_SERVICE --> PRISMA_SERVICE
+    SUB_SERVICE --> PRISMA_SERVICE
+    CHECKER_SERVICE --> PRISMA_SERVICE
+
+    PRISMA_SERVICE --> PRISMA_CLIENT
+    PRISMA_CLIENT --> MODEL1
+    PRISMA_CLIENT --> MODEL2
+
+    MODEL1 --> OP1
+    MODEL1 --> OP2
+    MODEL1 --> OP3
+    MODEL1 --> OP4
+    MODEL2 --> OP1
+    MODEL2 --> OP2
+    MODEL2 --> OP3
+
+    OP1 --> SQLITE_DB
+    OP2 --> SQLITE_DB
+    OP3 --> SQLITE_DB
+    OP4 --> SQLITE_DB
+    OP5 --> SQLITE_DB
+
+    SQLITE_DB --> TABLE1
+    SQLITE_DB --> TABLE2
+    TABLE1 --> INDEX1
+    TABLE1 --> INDEX2
+    TABLE2 --> INDEX3
+
+    USER_SERVICE --> REDIS_SERVICE
+    SUB_SERVICE --> REDIS_SERVICE
+
+    REDIS_SERVICE --> CACHE_STRATEGY
+    CACHE_STRATEGY --> CACHE_OP1
+    CACHE_STRATEGY --> CACHE_OP2
+    CACHE_STRATEGY --> CACHE_OP3
+    CACHE_STRATEGY --> CACHE_OP4
+
+    CACHE_OP1 --> REDIS_SERVER
+    CACHE_OP2 --> REDIS_SERVER
+    CACHE_OP3 --> REDIS_SERVER
+    CACHE_OP4 --> REDIS_SERVER
+
+    REDIS_SERVER --> KEY1
+    REDIS_SERVER --> KEY2
+    REDIS_SERVER --> KEY3
+    REDIS_SERVER --> TYPE1
+    REDIS_SERVER --> TYPE2
+    REDIS_SERVER --> TYPE3
+
+    AI_SERVICE --> GIGACHAT
+    GIGACHAT --> GC1
+    GIGACHAT --> GC2
+    GIGACHAT --> GC3
+
+    APP_MODULE --> MID1
+    APP_MODULE --> MID2
+    APP_MODULE --> MID3
+    APP_MODULE --> MID4
+    APP_MODULE --> MID5
+
+    SWAGGER_MODULE --> SWAGGER_CONFIG
+    SWAGGER_CONFIG --> API_TAGS
+    SWAGGER_CONFIG --> API_DESCRIPTIONS
+
+    style APP_MODULE fill:#ea2845,color:#fff
+    style AI_MODULE fill:#FF6B6B,color:#fff
+    style USER_MODULE fill:#4ECDC4,color:#fff
+    style SUB_MODULE fill:#95E1D3,color:#fff
+    style SQLITE_DB fill:#003B57,color:#fff
+    style REDIS_SERVER fill:#DC382D,color:#fff
+    style GIGACHAT fill:#4CAF50,color:#fff
+```
+
+### 🔄 Поток данных в системе
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 User Browser
+    participant F as 🌐 Frontend Next.js
+    participant R as 🗂️ Redux Store
+    participant A as 📡 Axios Client
+    participant G as 🚀 Gateway NestJS
+    participant M as 🛡️ Middleware
+    participant C as 🎮 Controller
+    participant S as 🧠 Service
+    participant P as 🗄️ Prisma ORM
+    participant D as 💾 SQLite DB
+    participant R2 as ⚡ Redis Cache
+    participant AI as 🤖 GigaChat AI
+
+    Note over U,AI: 📝 Регистрация пользователя
+    
+    U->>F: Заполняет форму регистрации
+    F->>F: Валидация данных
+    F->>A: POST /api/user/register
+    A->>G: HTTP Request
+    G->>M: Проходит через CORS
+    M->>C: User Controller
+    C->>S: register(userData)
+    S->>P: findUnique(user.name)
+    P->>D: SELECT query
+    D-->>P: User data
+    P-->>S: Check if exists
+    alt Пользователь не существует
+        S->>S: Hash password (Argon2)
+        S->>P: create(userData)
+        P->>D: INSERT query
+        D-->>P: New user
+        P-->>S: User object
+        S->>S: Generate JWT token
+        S-->>C: {user, token}
+        C-->>G: Response
+        G-->>A: JSON Response
+        A->>A: Save token to cookies
+        A-->>F: Response data
+        F->>R: dispatch(setUser(data))
+        F->>U: Redirect to games
+    else Пользователь существует
+        S-->>C: Error: User exists
+        C-->>G: 400 Bad Request
+        G-->>A: Error response
+        A-->>F: Display error
+        F->>U: Show error message
+    end
+
+    Note over U,AI: 🎮 Генерация истории
+    
+    U->>F: Выбирает игровой сценарий
+    F->>R: dispatch(startGame(gameId))
+    R->>A: POST /api/ai/send-message-start
+    A->>A: Add JWT token to header
+    A->>G: HTTP Request with Auth
+    G->>M: Auth Middleware
+    M->>M: Validate JWT token
+    alt Token валидный
+        M->>C: AI Controller
+        C->>S: sendMessageStart(gameId, userId)
+        S->>R2: Check cache
+        R2-->>S: Cache miss
+        S->>S: Build prompt
+        S->>AI: POST /chat/completions
+        AI-->>S: Story response
+        S->>S: Parse response
+        S->>AI: POST /images/generations
+        AI-->>S: Image URL
+        S->>R2: Cache story (TTL: 1 hour)
+        S->>P: Save game progress
+        P->>D: INSERT/UPDATE query
+        D-->>P: Success
+        P-->>S: Confirmation
+        S-->>C: {story, image, actions}
+        C-->>G: JSON Response
+        G-->>A: Response
+        A->>A: Handle response
+        A-->>F: Game data
+        F->>R: dispatch(setStory(data))
+        R->>F: Update UI state
+        F->>U: Display story with animation
+    else Token невалидный
+        M-->>G: 401 Unauthorized
+        G-->>A: Error response
+        A->>A: Clear token
+        A-->>F: Redirect to login
+        F->>U: Show login page
+    end
+
+    Note over U,AI: 💳 Покупка подписки
+    
+    U->>F: Выбирает тариф подписки
+    F->>R: dispatch(purchaseSubscription(subId))
+    R->>A: POST /api/subscription/purchase/:id
+    A->>G: HTTP Request with Auth
+    G->>M: Auth Middleware
+    M->>C: Subscription Controller
+    C->>S: purchase(userId, subId)
+    S->>P: findUnique(subscription.id)
+    P->>D: SELECT query
+    D-->>P: Subscription data
+    P-->>S: Subscription object
+    S->>P: update(user, subscription)
+    P->>D: UPDATE query (subBuyTime, subEndTime)
+    D-->>P: Updated user
+    P-->>S: User with subscription
+    S->>R2: Invalidate user cache
+    S->>R2: Set subscription cache
+    S-->>C: Success response
+    C-->>G: JSON Response
+    G-->>A: Response
+        A-->>F: Success
+        F->>R: dispatch(updateSubscription(data))
+        F->>U: Show success message
+```
+
+> 💡 **Примечание:** Диаграммы показывают детальную архитектуру всех уровней системы - от пользовательского интерфейса до баз данных и внешних сервисов
 
 </div>
 
