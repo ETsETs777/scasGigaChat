@@ -62,12 +62,20 @@ export class UserController {
   })
   @ApiResponse({ status: 401, description: "Токен не предоставлен" })
   async getUser(@Request() req) {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return { valid: false, message: "Токен не предоставлен" };
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return { valid: false, message: "Токен не предоставлен" };
+      }
+      const userDetails = await this.usersService.getUser(token);
+      if (!userDetails) {
+        return { valid: false, message: "Пользователь не найден" };
+      }
+      return { userDetails };
+    } catch (error) {
+      console.error("Error in getUser:", error);
+      throw error;
     }
-    const userDetails = await this.usersService.getUser(token);
-    return { userDetails };
   }
 
   @Patch("update")
