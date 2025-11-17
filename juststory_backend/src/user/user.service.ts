@@ -117,32 +117,47 @@ export class UserService {
   }
 
   async getUser(token: string): Promise<any> {
-    const cachedUser = await this.redis.get(`user:${token}`);
-    if (cachedUser) {
-      return JSON.parse(cachedUser);
+    try {
+      let cachedUser = null;
+      try {
+        cachedUser = await this.redis.get(`user:${token}`);
+      } catch (redisError) {
+        console.warn("Redis error, continuing without cache:", redisError);
+      }
+
+      if (cachedUser) {
+        return JSON.parse(cachedUser);
+      }
+
+      const user = await this.validateToken(token);
+      if (!user) {
+        return null;
+      }
+
+      const userDetails = {
+        name: user.name,
+        role: user.role,
+        subscription: user.subscription,
+        subBuyTime: user.subBuyTime,
+        subEndTime: user.subEndTime,
+      };
+
+      // Кэшируем данные на 1 час (если Redis доступен)
+      try {
+        await this.redis.set(
+          `user:${token}`,
+          JSON.stringify(userDetails),
+          "EX",
+          3600
+        );
+      } catch (redisError) {
+        console.warn("Redis cache set error:", redisError);
+      }
+
+      return userDetails;
+    } catch (error) {
+      console.error("Error in getUser service:", error);
+      throw error;
     }
-
-    const user = await this.validateToken(token);
-    if (!user) {
-      return null;
-    }
-
-    const userDetails = {
-      name: user.name,
-      role: user.role,
-      subscription: user.subscription,
-      subBuyTime: user.subBuyTime,
-      subEndTime: user.subEndTime,
-    };
-
-    // Кэшируем данные на 1 час
-    await this.redis.set(
-      `user:${token}`,
-      JSON.stringify(userDetails),
-      "EX",
-      3600
-    );
-
-    return userDetails;
   }
 }
