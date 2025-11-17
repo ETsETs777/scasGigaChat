@@ -236,7 +236,7 @@ http://localhost:4202/swagger
 
 ## 👨‍💻 Автор
 
-Created by CheateRYT
+Created by CheateRYT , ETsETs777
 
 ## 🤝 Вклад
 
