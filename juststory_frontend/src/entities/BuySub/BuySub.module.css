@@ -77,3 +77,52 @@
 .purchaseButton:hover {
   background-color: #805ad5;
 }
+
+@media (max-width: 768px) {
+  .container {
+    height: auto;
+    min-height: 100vh;
+    padding: 15px;
+  }
+
+  .header {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .subscriptionList {
+    max-width: 100%;
+  }
+
+  .subscriptionItem {
+    padding: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .subscriptionItem input {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .subscriptionItem label {
+    width: 100%;
+  }
+
+  .subscriptionItem label h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .subscriptionItem label p {
+    font-size: 14px;
+    margin: 4px 0;
+  }
+
+  .purchaseButton {
+    font-size: 18px;
+    padding: 14px 20px;
+    width: 100%;
+  }
+}

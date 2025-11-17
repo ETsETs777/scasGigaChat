@@ -37,7 +37,23 @@
   color: #805ad5; /* purple-700 */
 }
 .separator {
-  background-color: #6b46c1; /* purple-600 */
+  background-color: #6b46c1;
   height: 2px;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .navList {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .navItem {
+    font-size: 14px;
+  }
 }

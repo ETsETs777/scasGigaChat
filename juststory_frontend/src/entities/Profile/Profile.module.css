@@ -120,18 +120,46 @@
   border: 2px solid red; /* Красная граница для неуспешного обновления */
 }
 
-/* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .profileContent {
+    padding: 10px;
+    justify-content: flex-start;
+  }
+
   .header {
-    font-size: 40px; /* Уменьшение размера заголовка на мобильных устройствах */
-    margin-bottom: 20px; /* Уменьшение отступа снизу */
+    font-size: 24px;
+    margin-bottom: 15px;
+    padding: 10px;
+    text-align: center;
   }
+
   .profileInfo {
-    font-size: 20px; /* Уменьшение размера шрифта для информации профиля на мобильных устройствах */
-    padding: 20px; /* Уменьшение отступов внутри блока */
+    font-size: 16px;
+    padding: 15px;
+    max-width: 100%;
   }
+
+  .input,
+  .textarea {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .updateButton {
+    font-size: 18px;
+    padding: 12px 20px;
+    width: 100%;
+  }
+
   .logoutButton {
-    font-size: 24px; /* Уменьшение размера шрифта кнопки на мобильных устройствах */
-    padding: 10px 20px; /* Уменьшение отступов для кнопки */
+    font-size: 18px;
+    padding: 12px 20px;
+    width: 100%;
+    margin-top: 20px;
   }
 }

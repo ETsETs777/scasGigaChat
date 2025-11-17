@@ -66,3 +66,61 @@
 .closeButton:hover { border-color: rgba(255,255,255,0.2); }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 768px) {
+	.layout {
+		grid-template-columns: 1fr;
+		padding: 10px;
+		gap: 10px;
+	}
+
+	.sidebar {
+		position: relative;
+		top: 0;
+		order: 2;
+	}
+
+	.main {
+		order: 1;
+	}
+
+	.searchBox {
+		max-width: 100%;
+	}
+
+	.cardsContainer {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.card {
+		padding: 12px;
+	}
+
+	.cardTitle {
+		font-size: 14px;
+	}
+
+	.modal {
+		width: 90%;
+		max-width: 90%;
+		padding: 15px;
+		margin: 10px;
+	}
+
+	.title {
+		font-size: 20px;
+	}
+
+	.textAreaField,
+	.textInputField {
+		font-size: 16px;
+		padding: 12px;
+	}
+
+	.runButton,
+	.closeButton {
+		font-size: 16px;
+		padding: 12px;
+	}
+}
